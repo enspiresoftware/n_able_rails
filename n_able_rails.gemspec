@@ -24,5 +24,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "minitest-emoji"
   spec.add_development_dependency "pry"
 
-  spec.add_dependency 'savon'
+  #spec.add_dependency 'savon'
+  spec.add_runtime_dependency      'savon', '~> 2.3'
+  spec.add_runtime_dependency      'wasabi', '~> 3.2'
 end
