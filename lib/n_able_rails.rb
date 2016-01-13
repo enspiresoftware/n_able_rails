@@ -27,7 +27,7 @@ module NAbleRails
   end
 
   def self.list_devices(customer_id)
-    @client.call(:device_list, message: { Username: @username, Password: @password, Settings: { customerID: customer_id } } )
+    response = @client.call(:device_list, message: { Username: @username, Password: @password, Settings: { key: "customerID", value: customer_id } } )
   end
 
   def self.get_device_info(device_id)
@@ -40,12 +40,7 @@ module NAbleRails
 
   def self.list_customers
     initialize
-    #@client.call(:customer_list, message: { Username: @username, Password: @password, Settings: { listSOs: false} } )
-    request = @client.build_request(:customer_list, message: { Username: @username, Password: @password, Settings: { key: "listsos", value: "false"} } )
-
-    puts request.headers
-    puts request.body
-    request = @client.call(:customer_list, message: { Username: @username, Password: @password, Settings: { key: "listsos", value: "false"} } )
+    @client.call(:customer_list, message: { Username: @username, Password: @password, Settings: { "@xsi:type" => "impl:ArrayOf_tns1_T_KeyPair", "@env:arrayType" => "impl:T_KeyPair[]" } })
   end
 
   def self.device_status(device_id)
