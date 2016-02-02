@@ -27,23 +27,46 @@ module NAbleRails
   end
 
   def self.list_devices(customer_id)
-    response = @client.call(:device_list, message: { Username: @username, Password: @password, Settings: { key: "customerID", value: customer_id } } )
+    response = @client.call(:device_list, message: { Username: @username, Password: @password, Settings:
+                                            { "@xsi:type" => "impl:ArrayOf_tns1_T_KeyPair", "@env:arrayType" => "impl:T_KeyPair[]",
+                                              Setting:{key: "customerID", value: customer_id} }
+                                        })
+
+
   end
 
   def self.get_device_info(device_id)
-    @client.call(:device_get, message: { Username: @username, Password: @password, Settings: { deviceID: device_id } } )
+    @client.call(:device_get, message: { Username: @username, Password: @password, Settings:
+                                {
+                                  Setting:{key: "deviceID", value: device_id} }
+                            } )
   end
 
   def self.list_device_property(device_id)
-    @client.call(:device_property_list, message: { Username: @username, Password: @password, Settings: { deviceID: device_id } } )
+    @client.call(:device_property_list, message: { Username: @username, Password: @password, ReverseOrder: false, DeviceIDs: { DeviceID: 311043460}
+
+    })
   end
 
   def self.list_customers
     initialize
-    @client.call(:customer_list, message: { Username: @username, Password: @password, Settings: { "@xsi:type" => "impl:ArrayOf_tns1_T_KeyPair", "@env:arrayType" => "impl:T_KeyPair[]" } })
+    @client.call(:customer_list, message: { Username: @username, Password: @password, Settings: {  } })
   end
 
+  def self.device_asset_info_export2ById(device_id)
+    @client.call(:device_asset_info_export2, message: { Version: "0.0", Username: @username, Password: @password, Settings:
+                                               {
+                                                Setting:{Key: 'TargetByDeviceID', Value: {Value: device_id} } }
+                                          } )
+  end
+  def self.device_asset_info_export2()
+    @client.call(:device_asset_info_export2, message: { Version: "0.0", Username: @username, Password: @password
+                                           } )
+  end
   def self.device_status(device_id)
-    @client.call(:device_property_list, message: { Username: @username, Password: @password, Settings: { deviceID: device_id } } )
+    @client.call(:device_get_status, message: { Username: @username, Password: @password, Settings:
+                                          {
+                                            Setting:{key: "deviceID", value: device_id} }
+                                      } )
   end
 end
