@@ -4,12 +4,12 @@ require 'savon'
 module NAbleRails
   attr_accessor :username, :password
 
-  #params sas_url, username, password,
-  def self.initialize
+  # Initialize required params to begin calls
+  def self.initialize(sas_url, username, password)
     # Define variables... These will be params eventually.
     sas_url = "http://nablenfr.ensi.com"
-    @username = "alex.myers@enspiresoftware.com"
-    @password = "Enspire123!@#"
+    @username = username
+    @password = password
 
     # create a client for the service
     @client = Savon.client(wsdl: "#{sas_url}/dms/services/ServerEI?wsdl")
@@ -49,7 +49,6 @@ module NAbleRails
   end
 
   def self.list_customers
-    initialize
     @client.call(:customer_list, message: { Username: @username, Password: @password, Settings: {  } })
   end
 
