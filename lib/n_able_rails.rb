@@ -6,8 +6,6 @@ module NAbleRails
 
   # Initialize required params to begin calls
   def self.initialize(sas_url, username, password)
-    # Define variables... These will be params eventually.
-    sas_url = "http://nablenfr.ensi.com"
     @username = username
     @password = password
 
