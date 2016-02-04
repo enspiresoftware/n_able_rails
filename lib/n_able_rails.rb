@@ -41,7 +41,7 @@ module NAbleRails
   end
 
   def self.list_device_property(device_id)
-    @client.call(:device_property_list, message: { Username: @username, Password: @password, ReverseOrder: false, DeviceIDs: { DeviceID: 311043460}
+    @client.call(:device_property_list, message: { Username: @username, Password: @password, DeviceIDs: { DeviceID: device_id}, DeviceNames:{}, FilterIDs:{}, FilterNames:{}, ReverseOrder: false
 
     })
   end
