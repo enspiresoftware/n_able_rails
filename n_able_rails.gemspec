@@ -7,7 +7,7 @@ Gem::Specification.new do |spec|
   spec.name          = "n_able_rails"
   spec.version       = NAbleRails::VERSION
   spec.authors       = ["Alex Myers"]
-  spec.email         = ["alex.myers@enspiresoftware.com"]
+  spec.email         = ["dev.alex.myers@gmail.com"]
 
   spec.summary       = %q{Ruby Wrapper for N-Able API}
   spec.homepage      = "https://github.com/enspiresoftware/n_able_rails"
