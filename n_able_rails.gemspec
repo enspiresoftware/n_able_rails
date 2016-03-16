@@ -8,6 +8,7 @@ Gem::Specification.new do |spec|
   spec.version       = NAbleRails::VERSION
   spec.authors       = ["Alex Myers"]
   spec.email         = ["dev.alex.myers@gmail.com"]
+  spec.description   = "An Api wrapper for N-Able from SolarWinds"
 
   spec.summary       = %q{Ruby Wrapper for N-Able API}
   spec.homepage      = "https://github.com/enspiresoftware/n_able_rails"
@@ -18,13 +19,12 @@ Gem::Specification.new do |spec|
   spec.executables   = spec.files.grep(%r{^exe/}) { |f| File.basename(f) }
   spec.require_paths = ["lib"]
 
-  spec.add_development_dependency "bundler"
+  spec.add_development_dependency "bundler", '~> 0'
   spec.add_development_dependency "rake", "~> 10.0"
-  spec.add_development_dependency "minitest", "~> 5.0"
-  spec.add_development_dependency "minitest-emoji"
-  spec.add_development_dependency "pry"
+#  spec.add_development_dependency "minitest", "~> 5.0"
+#  spec.add_development_dependency "minitest-emoji"
+#  spec.add_development_dependency "pry"
 
-  #spec.add_dependency 'savon'
   spec.add_runtime_dependency      'savon', '~> 2.3'
   spec.add_runtime_dependency      'wasabi', '~> 3.2'
 end
