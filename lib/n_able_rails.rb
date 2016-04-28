@@ -1,16 +1,19 @@
 require "n_able_rails/version"
 require 'savon'
+require 'pry'
 
 module NAbleRails
   attr_accessor :username, :password
 
   # Initialize required params to begin calls
   def self.initialize(sas_url, username, password)
-    @username = username
-    @password = password
+    @sas_url = 'http://ncentral.ensi.com'
+    @username = 'export@ensi.com'
+    @password = '3L2WZXYsZM!'
+    @errors
 
     # create a client for the service
-    @client = Savon.client(wsdl: "#{sas_url}/dms/services/ServerEI?wsdl")
+    @client = Savon.client(wsdl: "#{@sas_url}/dms/services/ServerEI?wsdl")
   end
 
   # List all available operations for the api.
@@ -28,12 +31,17 @@ module NAbleRails
                                           { "@xsi:type" => "impl:ArrayOf_tns1_T_KeyPair", "@env:arrayType" => "impl:T_KeyPair[]",
                                           Setting:{key: "customerID", value: customer_id} }
                                         })
+  rescue Savon::Error => error
+    @errors = error.http.code
   end
 
   def self.get_device_info(device_id)
     @client.call(:device_get, message: { Username: @username, Password: @password, Settings:
                                 { Setting:{key: "deviceID", value: device_id} }
                                        } )
+
+  rescue Savon::SOAPFault => error
+    @errors = error.http.code
   end
 
   def self.list_device_property(device_id)
