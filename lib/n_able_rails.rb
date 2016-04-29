@@ -1,19 +1,22 @@
-require "n_able_rails/version"
+require 'n_able_rails/version'
 require 'savon'
-require 'pry'
 
 module NAbleRails
   attr_accessor :username, :password
 
   # Initialize required params to begin calls
   def self.initialize(sas_url, username, password)
-    @sas_url = 'http://ncentral.ensi.com'
-    @username = 'export@ensi.com'
-    @password = '3L2WZXYsZM!'
-    @errors
+    @username = username
+    @password = password
 
     # create a client for the service
-    @client = Savon.client(wsdl: "#{@sas_url}/dms/services/ServerEI?wsdl")
+    @client = Savon.client(wsdl: "#{sas_url}/dms/services/ServerEI?wsdl")
+    # test connection to the api
+    version_info
+  rescue HTTPI::SSLError, Timeout::Error, Errno::EINVAL, Errno::ECONNRESET,
+         EOFError, Net::HTTPBadResponse, Net::HTTPHeaderSyntaxError,
+         Net::ProtocolError, Errno::ECONNREFUSED => error
+    @error = error
   end
 
   # List all available operations for the api.
@@ -27,44 +30,78 @@ module NAbleRails
   end
 
   def self.list_devices(customer_id)
-    @client.call(:device_list, message: { Username: @username, Password: @password, Settings:
-                                          { "@xsi:type" => "impl:ArrayOf_tns1_T_KeyPair", "@env:arrayType" => "impl:T_KeyPair[]",
-                                          Setting:{key: "customerID", value: customer_id} }
+    @client.call(:device_list, message: { Username: @username,
+                                          Password: @password,
+                                          Settings:
+                                          { '@xsi:type' => 'impl:ArrayOf_tns1_T_KeyPair',
+                                            '@env:arrayType' => 'impl:T_KeyPair[]',
+                                            Setting: { key: 'customerID',
+                                                       value: customer_id } }
                                         })
-  rescue Savon::Error => error
-    @errors = error.http.code
+  rescue Savon::SOAPFault => error
+    if error.to_hash[:fault][:detail].nil?
+      return @errors = error.to_hash[:fault][:faultstring]
+    else
+      return @errors = error.to_hash[:fault][:detail][:string]
+    end
   end
 
   def self.get_device_info(device_id)
-    @client.call(:device_get, message: { Username: @username, Password: @password, Settings:
-                                { Setting:{key: "deviceID", value: device_id} }
-                                       } )
-
+    @client.call(:device_get, message: { Username: @username,
+                                         Password: @password,
+                                         Settings: { Setting: { key: 'deviceID',
+                                                                value: device_id } }
+                                       })
   rescue Savon::SOAPFault => error
-    @errors = error.http.code
+    @errors = error.to_hash[:fault][:faultstring]
   end
 
   def self.list_device_property(device_id)
-    @client.call(:device_property_list, message: { Username: @username, Password: @password, DeviceIDs: { DeviceID: device_id}, DeviceNames:{}, FilterIDs:{}, FilterNames:{}, ReverseOrder: false })
+    @client.call(:device_property_list, message: { Username: @username,
+                                                   Password: @password,
+                                                   DeviceIDs: { DeviceID: device_id },
+                                                   DeviceNames: {},
+                                                   FilterIDs: {},
+                                                   FilterNames: {},
+                                                   ReverseOrder: false })
+  rescue Savon::SOAPFault => error
+    @errors = error.to_hash[:fault][:faultstring]
   end
 
   def self.list_customers
-    @client.call(:customer_list, message: { Username: @username, Password: @password, Settings: {  } })
+    @client.call(:customer_list, message: { Username: @username,
+                                            Password: @password,
+                                            Settings: {} })
+  rescue Savon::SOAPFault => error
+    @errors = error.to_hash[:fault][:faultstring]
   end
 
   def self.device_asset_info_export2ById(device_id)
-    @client.call(:device_asset_info_export2, message: { Version: "0.0", Username: @username, Password: @password, Settings:
-                                                        { Setting:{Key: 'TargetByDeviceID', Value: {Value: device_id} } }
-                                                      } )
+    @client.call(:device_asset_info_export2, message: { Version: '0.0',
+                                                        Username: @username,
+                                                        Password: @password,
+                                                        Settings: { Setting: { Key: 'TargetByDeviceID',
+                                                                               Value: { Value: device_id } } }
+                                                      })
+  rescue Savon::SOAPFault => error
+    @errors = error.to_hash[:fault][:faultstring]
   end
 
-  def self.device_asset_info_export2()
-    @client.call(:device_asset_info_export2, message: { Version: "0.0", Username: @username, Password: @password })
+  def self.device_asset_info_export2
+    @client.call(:device_asset_info_export2, message: { Version: '0.0',
+                                                        Username: @username,
+                                                        Password: @password })
+  rescue Savon::SOAPFault => error
+    @errors = error.to_hash[:fault][:faultstring]
   end
 
   def self.device_status(device_id)
-    @client.call(:device_get_status, message: { Username: @username, Password: @password, Settings:
-                                          { Setting:{key: "deviceID", value: device_id} }
-                                              } )
+    @client.call(:device_get_status, message: { Username: @username,
+                                                Password: @password,
+                                                Settings: { Setting: { key: 'deviceID',
+                                                                       value: device_id } }
+                                              })
+  rescue Savon::SOAPFault => error
+    @errors = error.to_hash[:fault][:faultstring]
   end
 end
