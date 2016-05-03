@@ -16,7 +16,7 @@ module NAbleRails
   rescue HTTPI::SSLError, Timeout::Error, Errno::EINVAL, Errno::ECONNRESET,
          EOFError, Net::HTTPBadResponse, Net::HTTPHeaderSyntaxError,
          Net::ProtocolError, Errno::ECONNREFUSED => error
-    @error = error
+    return error
   end
 
   # List all available operations for the api.
@@ -39,11 +39,8 @@ module NAbleRails
                                                        value: customer_id } }
                                         })
   rescue Savon::SOAPFault => error
-    if error.to_hash[:fault][:detail].nil?
-      return @errors = error.to_hash[:fault][:faultstring]
-    else
-      return @errors = error.to_hash[:fault][:detail][:string]
-    end
+    return 'Invalid username-password combination.' if error.to_hash[:fault][:detail].nil?
+    return "Customer with id #{customer_id} could not be found."
   end
 
   def self.get_device_info(device_id)
@@ -53,7 +50,8 @@ module NAbleRails
                                                                 value: device_id } }
                                        })
   rescue Savon::SOAPFault => error
-    @errors = error.to_hash[:fault][:faultstring]
+    return "Device with id #{device_id} could not be found." if error.to_hash[:fault][:faultstring] == '5000 Query failed.'
+    return 'Invalid username-password combination.'
   end
 
   def self.list_device_property(device_id)
@@ -65,7 +63,8 @@ module NAbleRails
                                                    FilterNames: {},
                                                    ReverseOrder: false })
   rescue Savon::SOAPFault => error
-    @errors = error.to_hash[:fault][:faultstring]
+    return "Device with id #{device_id} could not be found." if error.to_hash[:fault][:faultstring] == '5000 Query failed.'
+    return 'Invalid username-password combination.'
   end
 
   def self.list_customers
@@ -73,7 +72,8 @@ module NAbleRails
                                             Password: @password,
                                             Settings: {} })
   rescue Savon::SOAPFault => error
-    @errors = error.to_hash[:fault][:faultstring]
+    return "Device with id #{device_id} could not be found." if error.to_hash[:fault][:faultstring] == '5000 Query failed.'
+    return 'Invalid username-password combination.'
   end
 
   def self.device_asset_info_export2ById(device_id)
@@ -83,16 +83,16 @@ module NAbleRails
                                                         Settings: { Setting: { Key: 'TargetByDeviceID',
                                                                                Value: { Value: device_id } } }
                                                       })
-  rescue Savon::SOAPFault => error
-    @errors = error.to_hash[:fault][:faultstring]
+  rescue Savon::SOAPFault
+    return 'Invalid username-password combination.'
   end
 
   def self.device_asset_info_export2
     @client.call(:device_asset_info_export2, message: { Version: '0.0',
                                                         Username: @username,
                                                         Password: @password })
-  rescue Savon::SOAPFault => error
-    @errors = error.to_hash[:fault][:faultstring]
+  rescue Savon::SOAPFault
+    return 'Invalid username-password combination.'
   end
 
   def self.device_status(device_id)
@@ -101,7 +101,7 @@ module NAbleRails
                                                 Settings: { Setting: { key: 'deviceID',
                                                                        value: device_id } }
                                               })
-  rescue Savon::SOAPFault => error
-    @errors = error.to_hash[:fault][:faultstring]
+  rescue Savon::SOAPFault
+    return 'Invalid username-password combination.'
   end
 end
