@@ -21,8 +21,6 @@ Gem::Specification.new do |spec|
 
   spec.add_development_dependency 'bundler', '~> 0'
   spec.add_development_dependency 'rake', '~> 10.0'
-  spec.add_development_dependency 'minitest-rails'
-  spec.add_development_dependency 'minitest-emoji'
 
   spec.add_runtime_dependency      'savon', '~> 2.3'
   spec.add_runtime_dependency      'wasabi', '~> 3.2'
